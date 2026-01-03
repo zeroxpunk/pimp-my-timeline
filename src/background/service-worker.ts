@@ -1,6 +1,6 @@
 import { getSettings } from '../lib/storage';
-import { filterTweets } from '../lib/ai-filter';
-import type { TweetData, Message } from '../types';
+import { filterTweets, type TweetInput } from '../lib/ai';
+import type { Message } from '../types';
 
 chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse) => {
   handleMessage(message).then(sendResponse);
@@ -19,8 +19,8 @@ async function handleMessage(message: Message) {
         return { results: {} };
       }
 
-      const payload = message.payload as { tweets: Omit<TweetData, 'element'>[] };
-      
+      const payload = message.payload as { tweets: TweetInput[] };
+
       const results = await filterTweets(
         payload.tweets,
         settings.customRules,
