@@ -33,3 +33,15 @@ And finally run the extension in your browser:
 1. Open `chrome://extensions/`
 2. Enable **Developer mode**
 3. Click **Load unpacked** → select `dist` folder
+
+## Contributing
+
+Everyone's welcome. Feel free to fork and open PRs.
+
+### Community Prompts
+
+Check out the `prompts/` folder for ready-to-use filter rules:
+
+- `hide-ai-slop.txt` — filters generic AI-generated content
+- `hide-attention-farmers.txt` — filters engagement bait and rage farming
+
