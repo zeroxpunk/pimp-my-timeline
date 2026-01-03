@@ -1,0 +1,115 @@
+article[data-pimp-pending="true"] {
+  filter: blur(6px) saturate(0.4) !important;
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  transition: filter 0.15s ease, opacity 0.15s ease !important;
+}
+
+article[data-pimp-approved="true"] {
+  filter: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
+  transition: filter 0.15s ease, opacity 0.15s ease !important;
+}
+
+article[data-pimp-hidden="true"] {
+  filter: blur(12px) saturate(0) !important;
+  opacity: 0.25 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.pimp-overlay-wrapper {
+  position: relative !important;
+  display: block !important;
+}
+
+.pimp-spinner {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 10000 !important;
+  pointer-events: none !important;
+}
+
+.pimp-spinner-ring {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(120, 120, 128, 0.2);
+  border-top-color: rgba(120, 120, 128, 0.7);
+  border-radius: 50%;
+  animation: pimp-spin 0.6s linear infinite;
+}
+
+@keyframes pimp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pimp-hidden-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 10000 !important;
+  pointer-events: none !important;
+}
+
+.pimp-hidden-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.pimp-hidden-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #536471;
+  letter-spacing: -0.2px;
+}
+
+.pimp-hidden-reason {
+  font-size: 13px;
+  font-weight: 400;
+  color: #8b98a5;
+  line-height: 1.3;
+}
+
+.pimp-show-btn {
+  margin-top: 4px;
+  padding: 6px 16px;
+  background: #1d9bf0;
+  border: none;
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pimp-show-btn:hover {
+  background: #1a8cd8;
+}
+
+.pimp-show-btn:active {
+  background: #1a8cd8;
+  transform: scale(0.96);
+}

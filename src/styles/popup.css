@@ -1,0 +1,355 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #16181c;
+  --bg-tertiary: #202327;
+  --bg-hover: #181818;
+  --border-color: #2f3336;
+  --text-primary: #e7e9ea;
+  --text-secondary: #71767b;
+  --accent: #1d9bf0;
+  --accent-hover: #1a8cd8;
+  --accent-active: #1780c7;
+  --danger: #f4212e;
+  --danger-bg: rgba(244, 33, 46, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f9f9;
+    --bg-tertiary: #eff3f4;
+    --bg-hover: #f7f7f7;
+    --border-color: #eff3f4;
+    --text-primary: #0f1419;
+    --text-secondary: #536471;
+    --accent: #1d9bf0;
+    --accent-hover: #1a8cd8;
+    --danger: #f4212e;
+    --danger-bg: rgba(244, 33, 46, 0.1);
+  }
+}
+
+body {
+  width: 340px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  padding: 16px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.x-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.x-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.x-toggle-track {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--bg-tertiary);
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+
+.x-toggle-track::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+input:checked + .x-toggle-track {
+  background: var(--accent);
+}
+
+input:checked + .x-toggle-track::before {
+  transform: translateX(20px);
+  background: white;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.api-key-row {
+  display: flex;
+  gap: 8px;
+}
+
+.api-key-row input {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.api-key-row input::placeholder {
+  color: var(--text-secondary);
+}
+
+.api-key-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.btn-icon svg.hidden {
+  display: none;
+}
+
+.add-filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.add-filter-row input {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-filter-row input::placeholder {
+  color: var(--text-secondary);
+}
+
+.add-filter-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.btn-add {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 9999px;
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  transition: all 0.2s;
+}
+
+.btn-add:not(:disabled) {
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.btn-add:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+.btn-add:not(:disabled):active {
+  background: var(--accent-active);
+  transform: scale(0.95);
+}
+
+.btn-add svg.hidden {
+  display: none;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.15s;
+  animation: chipIn 0.2s ease-out;
+}
+
+.country-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.country-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.country-btn:hover {
+  background: var(--bg-secondary);
+}
+
+.country-btn.active {
+  background: rgba(244, 33, 46, 0.15);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.country-btn .flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+@keyframes chipIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chip:hover {
+  background: var(--bg-secondary);
+}
+
+.chip-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: var(--text-secondary);
+  border: none;
+  border-radius: 50%;
+  color: var(--bg-primary);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.chip-remove:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.chip-remove svg {
+  width: 12px;
+  height: 12px;
+}
+
+.empty-state {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.hidden {
+  display: none !important;
+}
