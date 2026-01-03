@@ -13,10 +13,20 @@ A simple Chrome extension, which helps you to get rid of garbage in your x.com T
 
 First you need to obtain [Gemini API key](https://aistudio.google.com/apikey).
 
+Then clone the repo
+
+```bash 
+git clone https://github.com/zeroxpunk/pimp-my-timeline.git
+```
+
+Then build from sources:
+
 ```bash
 npm install
 npm run build
 ```
+
+And finally run the extension in your browser:
 
 1. Open `chrome://extensions/`
 2. Enable **Developer mode**
