@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const FilterResultSchema = z.object({
   id: z.string(),
   hide: z.boolean(),
-  reason: z.string().optional()
+  rule: z.string().optional()
 });
 
 export const BatchFilterResponseSchema = z.object({
@@ -15,5 +15,3 @@ export interface TweetInput {
   text: string;
   authorHandle: string;
 }
-
-

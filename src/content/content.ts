@@ -5,12 +5,18 @@ import { getState, resetState, setPending, setApproved, setBlocked } from './ui'
 
 let settings: UserSettings | null = null;
 
-const tweetCache = new Map<string, { decision: 'approved' | 'blocked'; reason?: string }>();
-const llmCache = new Map<string, { shouldHide: boolean; reason?: string }>();
+const tweetCache = new Map<string, { decision: 'approved' | 'blocked'; rule?: string }>();
+const llmCache = new Map<string, { shouldHide: boolean; rule?: string }>();
 const pendingTweets = new Map<string, { article: HTMLElement; text: string }>();
+const inFlightIds = new Set<string>();
 const locationFetchQueue = new Set<string>();
 
-let isProcessing = false;
+const DEBOUNCE_MS = 100;
+const BATCH_SIZE = 10;
+const MAX_CONCURRENT_BATCHES = 3;
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let activeBatches = 0;
 let visibilityObserver: IntersectionObserver | null = null;
 
 async function loadSettings() {
@@ -67,7 +73,7 @@ function applyCachedResult(article: HTMLElement, tweetId: string): boolean {
   if (cached.decision === 'approved') {
     setApproved(article);
   } else {
-    setBlocked(article, cached.reason || 'Cached filter');
+    setBlocked(article, cached.rule || 'Filtered');
   }
   return true;
 }
@@ -75,23 +81,23 @@ function applyCachedResult(article: HTMLElement, tweetId: string): boolean {
 function approve(article: HTMLElement, tweetId?: string) {
   if (tweetId) {
     tweetCache.set(tweetId, { decision: 'approved' });
+    inFlightIds.delete(tweetId);
   }
   setApproved(article);
 }
 
-function block(article: HTMLElement, reason: string, tweetId?: string) {
+function block(article: HTMLElement, rule: string, tweetId?: string) {
   if (tweetId) {
-    tweetCache.set(tweetId, { decision: 'blocked', reason });
+    tweetCache.set(tweetId, { decision: 'blocked', rule });
+    inFlightIds.delete(tweetId);
   }
-  setBlocked(article, reason);
+  setBlocked(article, rule);
 }
 
-async function processVisible() {
-  if (isProcessing || pendingTweets.size === 0) return;
+async function processBatch(batch: Array<[string, { article: HTMLElement; text: string }]>) {
+  if (batch.length === 0) return;
 
-  isProcessing = true;
-  const batch = Array.from(pendingTweets.entries());
-  pendingTweets.clear();
+  activeBatches++;
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -111,26 +117,66 @@ async function processVisible() {
 
       llmCache.set(textHash, {
         shouldHide: result?.shouldHide || false,
-        reason: result?.reason
+        rule: result?.matchedRule
       });
 
+      inFlightIds.delete(tweetId);
+
       if (result?.shouldHide) {
-        block(data.article, result.reason || 'Content filtered', tweetId);
+        block(data.article, result.matchedRule || 'Filtered', tweetId);
       } else {
         approve(data.article, tweetId);
       }
     }
   } catch {
     for (const [tweetId, data] of batch) {
+      inFlightIds.delete(tweetId);
       approve(data.article, tweetId);
     }
+  } finally {
+    activeBatches--;
+  }
+}
+
+function flushPending() {
+  debounceTimer = null;
+
+  if (pendingTweets.size === 0) return;
+
+  const allPending = Array.from(pendingTweets.entries());
+  pendingTweets.clear();
+
+  const batches: Array<[string, { article: HTMLElement; text: string }]>[] = [];
+  for (let i = 0; i < allPending.length; i += BATCH_SIZE) {
+    batches.push(allPending.slice(i, i + BATCH_SIZE));
   }
 
-  isProcessing = false;
+  const processNext = () => {
+    while (activeBatches < MAX_CONCURRENT_BATCHES && batches.length > 0) {
+      const batch = batches.shift()!;
+      processBatch(batch).then(() => {
+        if (batches.length > 0) {
+          processNext();
+        }
+      });
+    }
+  };
 
-  if (pendingTweets.size > 0) {
-    processVisible();
-  }
+  processNext();
+}
+
+function scheduleFlush() {
+  if (debounceTimer) return;
+  debounceTimer = setTimeout(flushPending, DEBOUNCE_MS);
+}
+
+function queueTweet(tweetId: string, article: HTMLElement, text: string) {
+  if (inFlightIds.has(tweetId)) return;
+  if (pendingTweets.has(tweetId)) return;
+
+  inFlightIds.add(tweetId);
+  pendingTweets.set(tweetId, { article, text });
+  scheduleFlush();
 }
 
 async function onTweetVisible(article: HTMLElement) {
@@ -174,7 +220,7 @@ async function onTweetVisible(article: HTMLElement) {
 
   if (cachedLLM) {
     if (cachedLLM.shouldHide) {
-      block(article, cachedLLM.reason || 'Content filtered', tweetId);
+      block(article, cachedLLM.rule || 'Filtered', tweetId);
     } else {
       approve(article, tweetId);
     }
@@ -182,8 +228,7 @@ async function onTweetVisible(article: HTMLElement) {
   }
 
   setPending(article);
-  pendingTweets.set(tweetId, { article, text });
-  processVisible();
+  queueTweet(tweetId, article, text);
 }
 
 function setupVisibilityObserver() {
@@ -199,7 +244,7 @@ function setupVisibilityObserver() {
         onTweetVisible(article);
       }
     },
-    { root: null, rootMargin: '100px', threshold: 0.1 }
+    { root: null, rootMargin: '200px', threshold: 0.1 }
   );
 }
 
@@ -262,6 +307,12 @@ chrome.runtime.onMessage.addListener((message) => {
     tweetCache.clear();
     llmCache.clear();
     pendingTweets.clear();
+    inFlightIds.clear();
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
 
     loadSettings().then(() => {
       document.querySelectorAll('article').forEach(article => {

@@ -23,7 +23,7 @@ export interface TweetData {
 
 export interface FilterResult {
   shouldHide: boolean;
-  reason?: string;
+  matchedRule?: string;
   detectedCountry?: string;
 }
 
