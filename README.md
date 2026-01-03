@@ -2,6 +2,8 @@
 
 # Pimp my Timeline
 
+![screenshot](public/docs/screenshot.png)
+
 A simple Chrome extension, which helps you to get rid of garbage in your x.com Timeline.
 
 ### Features
