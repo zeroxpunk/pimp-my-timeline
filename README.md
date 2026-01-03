@@ -1,3 +1,5 @@
+![logo](icons/icon-48.png)
+
 [![Twitter Follow](https://img.shields.io/twitter/follow/zeroxpunk?style=social)](https://x.com/zeroxpunk)
 
 # Pimp my Timeline
