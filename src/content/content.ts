@@ -1,6 +1,6 @@
 import type { UserSettings, FilterResult } from '../types';
 import { getAccountLocation, isLocationCached, getCachedLocation } from '../lib/x';
-import { isHomeFeed, extractTweetId, extractTweetText, extractScreenName, hashText } from './dom';
+import { isHomeFeed, extractTweetId, extractTweetText, extractScreenName, hashText, hasMedia } from './dom';
 import { getState, resetState, setPending, setApproved, setBlocked } from './ui';
 
 let settings: UserSettings | null = null;
@@ -204,6 +204,11 @@ async function onTweetVisible(article: HTMLElement) {
   }
 
   if (applyCachedResult(article, tweetId)) {
+    return;
+  }
+
+  if (hasMedia(article)) {
+    approve(article, tweetId);
     return;
   }
 

@@ -44,3 +44,11 @@ export function hashText(text: string): string {
   return hash.toString(36);
 }
 
+export function hasMedia(article: HTMLElement): boolean {
+  return !!(
+    article.querySelector('[data-testid="tweetPhoto"]') ||
+    article.querySelector('[data-testid="videoPlayer"]') ||
+    article.querySelector('[data-testid="card.wrapper"]')
+  );
+}
+
